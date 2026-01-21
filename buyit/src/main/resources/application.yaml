@@ -1,3 +1,35 @@
+server:
+  port: 7070
+  error:
+    include-error-message: always
+
 spring:
-  application:
-    name: buyit
+  datasource:
+    url: jdbc:postgresql://localhost:5432/buyitv1
+    username: postgres
+    password: possql312
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  mail:
+    host: localhost
+    port: 1025
+    username: hello
+    password: hello
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: "*"

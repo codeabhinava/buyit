@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shopping Cart | ShopHub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f6f7fb;
+            color: #111;
+        }
+
+        /* ---------- NAVBAR ---------- */
+        .navbar {
+            background: white;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .search input {
+            width: 420px;
+            padding: 10px 16px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 20px;
+        }
+
+        .cart-icon span {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background: black;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        /* ---------- PAGE ---------- */
+        .page {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .back {
+            color: #555;
+            margin-bottom: 20px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        /* ---------- CART LIST ---------- */
+        .cart-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .cart-info {
+            flex: 1;
+        }
+
+        .cart-info h3 {
+            margin: 0 0 6px;
+        }
+
+        .stock {
+            color: green;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .qty {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty button {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+        }
+
+        .price-box {
+            text-align: right;
+        }
+
+        .price-box .each {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .price-box .total {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .remove {
+            margin-top: 10px;
+            color: #888;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* ---------- SUMMARY ---------- */
+        .summary {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .summary h3 {
+            margin-bottom: 16px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .green {
+            color: green;
+        }
+
+        .total-row {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 16px;
+        }
+
+        .checkout {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .continue {
+            margin-top: 12px;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+        }
+
+        .features {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .features div {
+            margin-bottom: 8px;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .search input {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">BuyIT</div>
+
+    <div class="search">
+        <input type="text" placeholder="Search products...">
+    </div>
+
+    <div class="nav-right">
+        <a href="#">Categories</a>
+        <a href="#">Deals</a>
+
+        <div class="cart-icon">
+            🛒
+            <span th:text="${cartItems.size()}"></span>
+        </div>
+    </div>
+</div>
+
+<div class="page">
+    <a href="/users/home" class="back">← Continue Shopping</a>
+
+    <h1>Shopping Cart</h1>
+
+    <div class="layout">
+
+        <!-- CART ITEMS -->
+        <div class="cart-box">
+            <p th:text="${items} + ' items in cart'"></p>
+
+            <div th:if="${#lists.isEmpty(cartItems)}">
+                <p>Your cart is empty.</p>
+            </div>
+
+            <div class="cart-item" th:each="item : ${cartItems}">
+                <img th:src="${item.product.imageLink}">
+
+                <div class="cart-info">
+                    <h3 th:text="${item.product.name}"></h3>
+                    <div class="stock">In Stock</div>
+
+                    <div class="qty">
+                        <form th:action="@{/cart/decrease}" method="post">
+                            <input type="hidden" name="prodId"
+                                   th:value="${item.product.prodId}">
+                            <button>-</button>
+                        </form>
+
+                        <span th:text="${item.quantity}"></span>
+
+                        <form th:action="@{/cart/increase}" method="post">
+                            <input type="hidden" name="prodId"
+                                   th:value="${item.product.prodId}">
+                            <button>+</button>
+                        </form>
+                    </div>
+
+                    <form th:action="@{/cart/remove}" method="post">
+                        <input type="hidden" name="prodId"
+                               th:value="${item.product.prodId}">
+                        <div class="remove">Remove</div>
+                    </form>
+                </div>
+
+                <div class="price-box">
+                    <div class="each">
+                        ₹ <span th:text="${item.product.price}"></span> each
+                    </div>
+                    <div class="total">
+                        ₹ <span th:text="${item.product.price * item.quantity}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="summary">
+            <h3>Order Summary</h3>
+
+            <div class="row">
+                <span>Subtotal</span>
+                <span>₹ <span th:text="${total}"></span></span>
+            </div>
+
+            <div class="row">
+                <span>Shipping</span>
+                <span class="green">FREE</span>
+            </div>
+
+            <div class="row">
+                <span>Estimated Tax</span>
+                <span>₹ <span th:text="${0.025*total}"></span></span>
+            </div>
+
+            <div class="row total-row">
+                <span>Total</span>
+                <span>₹ <span th:text="${total + (0.025 * total)}"></span></span>
+            </div>
+
+            <a th:href="@{/users/checkout}"><button class="checkout">Proceed to Checkout</button></a>
+            <button class="continue">Continue Shopping</button>
+
+            <div class="features">
+                ✔ Secure checkout<br>
+                ✔ Free returns within 30 days<br>
+                ✔ Warranty included
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

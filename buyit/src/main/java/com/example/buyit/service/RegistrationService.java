@@ -54,7 +54,7 @@ public class RegistrationService implements UserDetailsService {
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
         // ✅ Send email after both are safely persisted
-        String link = "http://localhost:7070/users/register/confirm?token=" + token;
+        String link = "http://localhost:7070/users/api/register/confirm?token=" + token;
         emailSender.send(appreg.getEmail(), buildEmail(appreg.getUsername(), link));
         return "User registered successfully";
     }

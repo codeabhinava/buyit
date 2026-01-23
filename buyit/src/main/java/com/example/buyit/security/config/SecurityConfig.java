@@ -29,12 +29,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/**", "/users/register/**", "/api/v1/user/**").permitAll()
+                .requestMatchers("/admin/**", "/users/api/**", "/users/register/**", "/api/v1/user/**", "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/home", true)
+                .defaultSuccessUrl("/users/home", true)
                 )
                 .logout(logout -> logout
                 .logoutUrl("/logout")

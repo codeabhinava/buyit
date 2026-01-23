@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Orders</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f6f8;
+        }
+        .img{
+            width: 80px;
+            height: 80px;
+            margin: 8px;
+        }
+        .container {
+            width: 85%;
+            margin: 30px auto;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .order-header div {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .status {
+            font-weight: bold;
+            color: green;
+        }
+
+        .items {
+            margin-top: 10px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            flex: 2;
+        }
+
+        .item-qty {
+            flex: 1;
+            text-align: center;
+        }
+
+        .item-price {
+            flex: 1;
+            text-align: right;
+        }
+
+        .order-total {
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        .empty {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background: white;
+    border-bottom: 1px solid #eee;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* SEARCH */
+.search-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-box input {
+    width: 420px;
+    padding: 10px 16px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+/* RIGHT NAV */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.nav-right a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+}
+
+.icon {
+    position: relative;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* CART BADGE */
+.cart span {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background: red;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 50%;
+}
+
+/* USER */
+.user-name {
+    font-size: 14px;
+    margin-left: 4px;
+}
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+
+            .order-header {
+                flex-direction: column;
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header class="header">
+    <div class="logo"><a th:href="@{/users/home}">BuyIT</a></div>
+
+    <div class="search-box">
+        <input type="text" placeholder="Search products...">
+    </div>
+
+    <div class="nav-right">
+        <a href="#">Categories</a>
+        <a href="#">Deals</a>
+
+        <div class="icon cart">
+            <a th:href="@{/users/cart}">
+            🛒
+            <span id="cart-count">0</span></a>
+        </div>
+
+        <div class="icon">
+            👤
+            <span class="user-name" th:text="${username}"></span>
+        </div>
+    </div>
+</header>
+<div class="container">
+
+    <h2>My Orders</h2>
+
+    <!-- If no orders -->
+    <div class="empty" th:if="${#lists.isEmpty(orders)}">
+        <p>You haven’t placed any orders yet.</p>
+    </div>
+
+    <!-- Orders list -->
+    <div class="order-card" th:each="order : ${orders}">
+
+       <div th:each="entry : ${ordersMap}">
+    <h3>Order ID: <span th:text="${entry.key}"></span></h3>
+
+    <div th:each="item : ${entry.value}">
+        <img th:src="${item.product.imageLink}">
+        <p th:text="${item.product.name}"></p>
+        <p>Qty: <span th:text="${item.quantity}"></span></p>
+        <p>Total: ₹<span th:text="${item.totalPrice}"></span></p>
+    </div>
+
+    <hr>
+</div>
+
+
+        </div>
+
+        
+
+    </div>
+
+</div>
+
+</body>
+</html>

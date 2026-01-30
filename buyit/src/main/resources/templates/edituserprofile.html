@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background: #f6f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .profile-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h2,h3 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 12px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .address-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: #fafafa;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .save-btn {
+            background: #2d5be3;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="profile-container">
+    <h2>Edit Profile</h2>
+
+    <!-- User info -->
+    <label>Username</label>
+    <input type="text" th:value="${user.username}" readonly>
+
+    <label>Email</label>
+    <input type="email" th:value="${user.email}" readonly>
+
+    <hr>
+
+    <h3>Your Addresses</h3>
+
+    <!-- If no address -->
+    <div th:if="${#lists.isEmpty(addresses)}">
+        <p>No address found.</p>
+    </div>
+
+    <!-- Loop addresses -->
+    <div th:each="add : ${address}" class="address-card">
+
+        <form th:action="@{/users/edit-profile}" method="post">
+
+            <input type="hidden" name="id" th:value="${add.id}"/>
+
+            <label>Full Name</label>
+            <input type="text" name="fullname" th:value="${add.fullname}" required>
+
+            <label>Address Line</label>
+            <input type="text" name="addressLine" th:value="${add.addressLine}" required>
+
+            <label>City</label>
+            <input type="text" name="city" th:value="${add.city}" required>
+
+            <label>State</label>
+            <input type="text" name="state" th:value="${add.state}" required>
+
+            <label>Pincode</label>
+            <input type="text" name="pinCode" th:value="${add.pinCode}" required>
+
+            <label>Phone Number</label>
+            <input type="text" name="phoneNumber" th:value="${add.phoneNumber}" required>
+
+            <button type="submit" class="save-btn">Update Address</button>
+
+        </form>
+
+    </div>
+
+    <div style="text-align:center;">
+        <a th:href="@{/users/profile}">
+            <button type="button" class="cancel-btn">Back to Profile</button>
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

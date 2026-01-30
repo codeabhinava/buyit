@@ -20,6 +20,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+  razorpay:
+    key-id: rzp_test_S8OFzDvhEw6Gjr
+    key-secret: 4YHwUGMddtDzA5A9F7Jwx6l8
+    
+
   mail:
     host: localhost
     port: 1025

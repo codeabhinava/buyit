@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Profile - BuyIT</title>
+    <style>
+        body {
+            background: #f6f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: 40px auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* LEFT CARD */
+        .profile-card {
+            width: 300px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .profile-icon {
+            font-size: 70px;
+        }
+
+        .profile-card h2 {
+            margin: 10px 0;
+        }
+
+        .profile-card p {
+            color: gray;
+        }
+
+        .profile-card a {
+            display: block;
+            margin-top: 12px;
+            padding: 10px;
+            text-decoration: none;
+            background: black;
+            color: white;
+            border-radius: 6px;
+        }
+
+        /* RIGHT DETAILS */
+        .profile-details {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-details h3 {
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            margin-bottom: 15px;
+        }
+
+        .info-row span {
+            font-weight: bold;
+        }
+
+        .buttons {
+            margin-top: 25px;
+        }
+
+        .buttons a {
+            margin-right: 15px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background: #2d5be3;
+            color: white;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+
+    <!-- LEFT CARD -->
+    <div class="profile-card">
+        <div class="profile-icon">👤</div>
+        <h2 th:text="${user.username}"></h2>
+        <p th:text="${user.email}"></p>
+
+        <a th:href="@{/users/orders}">My Orders</a>
+        <a th:href="@{/logout}">Logout</a>
+    </div>
+
+    <!-- RIGHT DETAILS -->
+    <div class="profile-details">
+        <h3>Profile Information</h3>
+
+        <div class="info-row">
+            <span>Username:</span> <span th:text="${user.username}"></span>
+        </div>
+        <form>
+            <br>
+            <div th:each="add : ${address}">
+            <p><b>Full Name:</b> <span th:text="${add.fullname}"></span></p>
+<p><b>Address:</b> <span th:text="${add.addressLine}"></span></p>
+<p><b>City:</b> <span th:text="${add.city}"></span></p>
+<p><b>State:</b> <span th:text="${add.state}"></span></p>
+<p><b>Pincode:</b> <span th:text="${add.pinCode}"></span></p>
+<p><b>Phone:</b> <span th:text="${add.phoneNumber}"></span></p>
+                </div>
+                <br>
+        </form>
+        <div class="buttons">
+            <a th:href="@{/users/edit-profile}">Edit Profile</a>
+            <a th:href="@{/users/checkout}">Go to Checkout</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

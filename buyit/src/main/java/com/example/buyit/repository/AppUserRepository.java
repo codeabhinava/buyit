@@ -25,4 +25,5 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     int enableAppUser(String email);
 
     Optional<AppUser> findByToken(String token);
+
 }

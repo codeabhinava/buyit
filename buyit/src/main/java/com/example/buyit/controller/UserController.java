@@ -2,9 +2,11 @@ package com.example.buyit.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.buyit.model.Address;
 import com.example.buyit.model.AppReg;
@@ -36,6 +39,9 @@ import com.example.buyit.repository.OrderedItemsRepository;
 import com.example.buyit.repository.ProductRepository;
 import com.example.buyit.service.CartService;
 import com.example.buyit.service.RegistrationService;
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 
 @CrossOrigin
 @Controller
@@ -110,6 +116,8 @@ public class UserController {
         List<Product> products = productRepository.findAll();
         model.addAttribute("products", products);
         model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
+        List<String> categories = productRepository.findDistinctCategories();
+        model.addAttribute("categories", categories);
         return "homepage";
     }
 
@@ -125,6 +133,21 @@ public class UserController {
 
     }
 
+    @GetMapping("/categories/{category}")
+    public String viewByCategory(@PathVariable String category, Model model) {
+        List<Product> products = productRepository.findByCategory(category);
+        model.addAttribute("products", products);
+        model.addAttribute("cartCount", cartRepository.getTotalCartCount(category));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        model.addAttribute("username", username);
+        model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
+        List<String> categories = productRepository.findDistinctCategories();
+        model.addAttribute("categories", categories);
+        return "categorypage";
+    }
+
     @GetMapping("/cart")
     public String viewCart(Model model) {
 
@@ -136,7 +159,7 @@ public class UserController {
                 .orElseThrow();
 
         List<Cart> cartItems = cartRepository.findAllByAppUser(user);
-
+        model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
         model.addAttribute("username", username);
         model.addAttribute("cartItems", cartItems);
         int items = 0;
@@ -148,6 +171,8 @@ public class UserController {
                 .sum();
         model.addAttribute("items", items);
         model.addAttribute("total", total);
+        List<String> categories = productRepository.findDistinctCategories();
+        model.addAttribute("categories", categories);
 
         return "usercart";
     }
@@ -205,6 +230,34 @@ public class UserController {
         return "redirect:/users/checkout";
     }
 
+    @GetMapping("/sort/price")
+    public String sortByPrice(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        model.addAttribute("username", username);
+        model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
+        List<String> categories = productRepository.findDistinctCategories();
+        model.addAttribute("categories", categories);
+
+        List<Product> products = productRepository.findAllByOrderByPriceAsc();
+        model.addAttribute("products", products);
+        return "homepage";
+    }
+
+    @GetMapping("/sort/quantity")
+    public String sortByQuantity(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        model.addAttribute("username", username);
+        model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
+        List<String> categories = productRepository.findDistinctCategories();
+        model.addAttribute("categories", categories);
+
+        List<Product> products = productRepository.findAllByOrderByQuantityAsc();
+        model.addAttribute("products", products);
+        return "homepage";
+    }
+
     @GetMapping("/placeorder")
     public String placeOrder(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -243,10 +296,94 @@ public class UserController {
                 .findByUsername(username)
                 .orElseThrow();
         List<OrderedItems> orders = orderedItemsRepository.findAllByAppUser(user);
-        Map<String, List<OrderedItems>> groupedOrders = orders.stream()
-                .collect(Collectors.groupingBy(item -> item.getOrder().getOrderId()));
-        model.addAttribute("orders", groupedOrders);
+
+        model.addAttribute("orders", orders);
         return "previousorders";
     }
 
+    @GetMapping("/profile")
+    public String viewProfile(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        AppUser user = appUserRepository
+                .findByUsername(username)
+                .orElseThrow();
+        model.addAttribute("user", user);
+
+        List<Address> address = addressRepository.findAllByAppUser(user);
+        model.addAttribute("address", address);
+        return "profilespage";
+    }
+
+    @GetMapping("/deals")
+    public String viewDeals() {
+        return "dealspage";
+    }
+
+    @PostMapping("/cart/decrease")
+    public String decreaseQuantity(@RequestParam("prodId") Long prodId) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        cartRepository.decrementQuantity(prodId, username);
+
+        return "redirect:/users/cart";
+
+    }
+
+    @PostMapping("/cart/increase")
+    public String increaseQuantity(@RequestParam("prodId") Long prodId) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        cartRepository.incrementQuantity(prodId, username);
+
+        return "redirect:/users/cart";
+
+    }
+
+    @PostMapping("/cart/remove")
+    public String deleteFromCart(@RequestParam("prodId") Long prodId) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        cartRepository.deleteByProductIdAndUsername(prodId, username);
+
+        return "redirect:/users/cart";
+
+    }
+
+    @GetMapping("/edit-profile")
+    public String editUserProfile(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        AppUser user = appUserRepository
+                .findByUsername(username)
+                .orElseThrow();
+        model.addAttribute("user", user);
+        List<Address> address = addressRepository.findAllByAppUser(user);
+        model.addAttribute("address", address);
+        return "edituserprofile";
+    }
+
+    @PostMapping("/edit-profile")
+    public String updateUserProfile(@ModelAttribute Address address) {
+
+        Address existing = addressRepository.findById(address.getId())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        existing.setFullname(address.getFullname());
+        existing.setAddressLine(address.getAddressLine());
+        existing.setCity(address.getCity());
+        existing.setPhoneNumber(address.getPhoneNumber());
+        existing.setPinCode(address.getPinCode());
+
+        addressRepository.save(existing);
+
+        return "redirect:/users/profile";
+
+    }
 }

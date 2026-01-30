@@ -178,7 +178,7 @@
 
 <body>
 <header class="header">
-    <div class="logo"><a th:href="@{/users/home}">BuyIT</a></div>
+    <div class="logo">BuyIT</div>
 
     <div class="search-box">
         <input type="text" placeholder="Search products...">
@@ -212,19 +212,35 @@
     <!-- Orders list -->
     <div class="order-card" th:each="order : ${orders}">
 
-       <div th:each="entry : ${ordersMap}">
-    <h3>Order ID: <span th:text="${entry.key}"></span></h3>
+        <div class="order-header">
+            <div th:each="item : ${orders}">
+    <p>
+        Order ID:
+        <span th:text="${item.order.orderId}"></span>
+    </p>
 
-    <div th:each="item : ${entry.value}">
-        <img th:src="${item.product.imageLink}">
-        <p th:text="${item.product.name}"></p>
-        <p>Qty: <span th:text="${item.quantity}"></span></p>
-        <p>Total: ₹<span th:text="${item.totalPrice}"></span></p>
-    </div>
+    <p>
+        Order Date:
+        <span th:text="${item.order.orderDate}"></span>
+    </p>
+    <p>
+        <img class="img" th:src="${item.product.imageLink}">
+    </p>
+    <p>
+        Product:
+        <span th:text="${item.product.name}"></span>
+    </p>
 
-    <hr>
+    <p>
+        Quantity:
+        <span th:text="${item.quantity}"></span>
+    </p>
+
+    <p>
+        Total:
+        ₹<span th:text="${item.price}"></span>
+    </p>
 </div>
-
 
         </div>
 

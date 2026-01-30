@@ -225,29 +225,187 @@
                 display: none;
             }
         }
+        
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background: white;
+    border-bottom: 1px solid #eee;
+}
+
+.logo a {
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+}
+
+
+/* SEARCH */
+.search-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-box input {
+    width: 420px;
+    padding: 10px 16px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+/* RIGHT NAV */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.nav-right a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+}
+
+.icon {
+    position: relative;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+/* CART BADGE */
+.cart span {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background: red;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 50%;
+}
+
+/* USER */
+.user-name {
+    font-size: 14px;
+    margin-left: 4px;
+}
+/* ---------- PRODUCTS ---------- */
+.container {
+    padding: 24px;
+}
+
+.products-count {
+    margin-bottom: 16px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* Container */
+.category-dropdown, .profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Button */
+.category-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px 12px;
+    font-weight: 600;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    z-index: 1000;
+}
+
+/* Each category item */
+.dropdown-menu a {
+    display: block;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: black;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f2f2f2;
+}
+
+.profile-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Show dropdown on hover */
+.category-dropdown:hover .dropdown-menu {
+    display: block;
+}
     </style>
 </head>
 
 <body>
 
 <!-- NAVBAR -->
-<div class="navbar">
-    <div class="logo">BuyIT</div>
 
-    <div class="search">
+    <header class="header">
+    <div class="logo"><a th:href="@{/users/home}">BuyIT</a></div>
+
+    <div class="search-box">
         <input type="text" placeholder="Search products...">
     </div>
 
     <div class="nav-right">
-        <a href="#">Categories</a>
-        <a href="#">Deals</a>
+  <div class="category-dropdown">
+    <button class="category-btn">Categories ⬇</button>
 
-        <div class="cart-icon">
-            🛒
-            <span th:text="${cartItems.size()}"></span>
-        </div>
+    <div class="dropdown-menu">
+        <a th:each="cat : ${categories}" th:text="${cat}" th:href="@{categories/{category}(category=${cat})}"></a>
     </div>
 </div>
+
+
+
+
+        <a th:href="@{/users/deals}">Deals</a>
+
+        <div class="icon cart">
+            <a th:href="@{/users/cart}">
+            🛒
+            <span id="cart-count" th:text="${cartCount}"></span></a>
+        </div>
+        <div><a th:href="@{/users/orders}">ORDERS</a></div>
+        <div class="profile-dropdown">
+        <div class="icon">
+            👤</div>
+            <span class="user-name" th:text="${username}"></span>
+            <div class="dropdown-menu">
+                <a th:href="@{/users/profile}">Profile</a>
+                <a th:href="@{/users/settings}">Settings</a>
+                <a th:href="@{/logout}">Logout</a>
+            </div>
+        
+        </div>
+    </div>
+</header>
 
 <div class="page">
     <a href="/users/home" class="back">← Continue Shopping</a>
@@ -272,7 +430,7 @@
                     <div class="stock">In Stock</div>
 
                     <div class="qty">
-                        <form th:action="@{/cart/decrease}" method="post">
+                        <form th:action="@{/users/cart/decrease}" method="post">
                             <input type="hidden" name="prodId"
                                    th:value="${item.product.prodId}">
                             <button>-</button>
@@ -280,17 +438,17 @@
 
                         <span th:text="${item.quantity}"></span>
 
-                        <form th:action="@{/cart/increase}" method="post">
+                        <form th:action="@{/users/cart/increase}" method="post">
                             <input type="hidden" name="prodId"
                                    th:value="${item.product.prodId}">
                             <button>+</button>
                         </form>
                     </div>
 
-                    <form th:action="@{/cart/remove}" method="post">
+                    <form th:action="@{/users/cart/remove}" method="post">
                         <input type="hidden" name="prodId"
                                th:value="${item.product.prodId}">
-                        <div class="remove">Remove</div>
+                        <div class="remove"><button type="submit">Remove</button></div>
                     </form>
                 </div>
 

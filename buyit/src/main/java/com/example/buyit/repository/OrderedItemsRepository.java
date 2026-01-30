@@ -10,4 +10,6 @@ public interface OrderedItemsRepository extends JpaRepository<OrderedItems, Long
 
     List<OrderedItems> findAllByAppUser(com.example.buyit.model.AppUser user);
 
+    List<OrderedItems> findAllByOrderId(Long orderId);
+
 }

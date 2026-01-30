@@ -26,4 +26,14 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("SELECT COALESCE(SUM(c.quantity), 0) FROM Cart c WHERE c.appUser.username = ?1")
     Long getTotalCartCount(String username);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE Cart c SET c.quantity = c.quantity - 1 WHERE c.product.prodId = ?1 AND c.appUser.username = ?2")
+    int decrementQuantity(Long productId, String username);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Cart c WHERE c.product.prodId = ?1 AND c.appUser.username = ?2")
+    int deleteByProductIdAndUsername(Long productId, String username);
+
 }

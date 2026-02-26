@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+        }
+
+        .header {
+            background: #1e1e2f;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .logout-btn {
+            background: #ff4b5c;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(420px,1fr));
+            gap: 20px;
+            
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+        }
+
+        .card a {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 16px;
+            background: #2d5be3;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 600px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>Admin Dashboard</h2>
+    <a th:href="@{/logout}" class="logout-btn">Logout</a>
+</div>
+
+<div class="container">
+    <h3>Welcome, Admin 👋</h3>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>👥 Manage Users</h3>
+            <p>View, enable or disable users</p>
+            <a th:href="@{/admin/manageusers}">Open</a>
+        </div>
+
+        <div class="card">
+            <h3>📦 Manage Products</h3>
+            <p>Add, edit or delete products</p>
+            <a th:href="@{/admin/products}">Open</a>
+        </div>
+
+        <div class="card">
+            <h3>🧾 View Orders</h3>
+            <p>Check customer orders</p>
+            <a th:href="@{/admin/orders}">Open</a>
+        </div>
+
+        <div class="card">
+            <h3>Top Sellers</h3>
+            <p>Best Performing Products</p>
+            <a th:href="@{/admin/topsellers}">Open</a>
+        </div>
+
+        <div class="card">
+            <h3>Low Sellers</h3>
+            <p>Least Performing Products</p>
+            <a th:href="@{/admin/bottomsellers}">Open</a>
+        </div>
+
+        <div class="card">
+            <h3>Tickets</h3>
+            <p>Check Status</p>
+            <a th:href="@{/admin/tickets}">Open</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

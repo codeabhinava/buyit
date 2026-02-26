@@ -35,6 +35,8 @@ public class Product {
     @Column(name = "price")
     private Long price;
 
+    private boolean show;
+
     public Product(String name, String imageLink, String category, long quantity, long price) {
         this.name = name;
         this.imageLink = imageLink;

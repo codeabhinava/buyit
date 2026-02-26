@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Details - Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .container {
+            width: 60%;
+            margin: 40px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .row label {
+            font-weight: bold;
+            width: 40%;
+        }
+
+        .row span {
+            width: 60%;
+            text-align: left;
+        }
+
+        .status-active {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-inactive {
+            color: red;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .btn-back {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #28a745;
+            color: white;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>User Details</h2>
+
+    <div class="row">
+        <label>User ID:</label>
+        <span th:text="${user.token}"></span>
+    </div>
+
+    <div class="row">
+        <label>Username:</label>
+        <span th:text="${user.username}"></span>
+    </div>
+
+    <div class="row">
+        <label>Fullname:</label>
+        <span th:text="${address.fullname}"></span>
+    </div>
+
+    <div class="row">
+        <label>Email:</label>
+        <span th:text="${user.email}"></span>
+    </div>
+
+    <div class="row">
+        <label>Phone:</label>
+        <span th:text="${address.phoneNumber}"></span>
+    </div>
+
+    <div class="row">
+        <label>Role:</label>
+        <span th:text="${user.userRole}"></span>
+    </div>
+
+    <div class="row">
+        <label>Status:</label>
+        <span th:classappend="${user.enabled} ? 'status-active' : 'status-inactive'"
+              th:text="${user.enabled} ? 'Active' : 'Inactive'">
+        </span>
+    </div>
+
+    <div class="row">
+        <label>Created At:</label>
+        <span th:text="${createdat.confirmedAt}"></span>
+    </div>
+
+    <div class="row">
+        <label>Address:</label>
+        <span th:text="${address.addressLine}"></span>
+    </div>
+
+    <!-- Buttons -->
+    <div style="text-align:center;">
+        <a th:href="@{/admin/users}" class="btn btn-back">Back to Users</a>
+        <a th:href="@{/admin/user/edit/{id}(id=${user.id})}" class="btn btn-edit">Edit User</a>
+    </div>
+
+</div>
+
+</body>
+</html>

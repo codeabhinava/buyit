@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit User - Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+        .container {
+            width: 500px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        .btn-group {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .save-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .cancel-btn {
+            background-color: #dc3545;
+            color: white;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Edit User</h2>
+
+    <form th:action="@{/admin/users/update}" method="post">
+
+        <!-- Hidden ID -->
+        <input type="hidden" th:name="id" th:value="${user.id}" />
+
+        <label>Username</label>
+        <input type="text" name="username" th:value="${user.username}" required/>
+
+        <label>Email</label>
+        <input type="email" name="email" th:value="${user.email}" required/>
+
+        <label>Role</label>
+        <select name="userRole">
+            <option th:value="USER" th:selected="${user.userRole == 'USER'}">USER</option>
+            <option th:value="ADMIN" th:selected="${user.userRole == 'ADMIN'}">ADMIN</option>
+        </select>
+
+        <label>Status</label>
+        <select name="enabled">
+            <option th:value="true" th:selected="${user.enabled}">Enabled</option>
+            <option th:value="false" th:selected="${!user.enabled}">Disabled</option>
+        </select>
+
+        <div class="btn-group">
+            <button type="submit" class="save-btn">Update User</button>
+            <a th:href="@{/admin/manageusers}" class="cancel-btn" style="padding:10px 18px;text-decoration:none;">Cancel</a>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>

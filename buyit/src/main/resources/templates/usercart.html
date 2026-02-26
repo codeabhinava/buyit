@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Shopping Cart | ShopHub</title>
+    <title>Shopping Cart | BuyIT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -418,11 +418,10 @@
         <div class="cart-box">
             <p th:text="${items} + ' items in cart'"></p>
 
-            <div th:if="${#lists.isEmpty(cartItems)}">
+            <div th:if="${#lists.isEmpty(cartItems) }">
                 <p>Your cart is empty.</p>
             </div>
-
-            <div class="cart-item" th:each="item : ${cartItems}">
+            <div class="cart-item"  th:each="item : ${cartItems}">
                 <img th:src="${item.product.imageLink}">
 
                 <div class="cart-info">
@@ -487,7 +486,7 @@
                 <span>₹ <span th:text="${total + (0.025 * total)}"></span></span>
             </div>
 
-            <a th:href="@{/users/checkout}"><button class="checkout">Proceed to Checkout</button></a>
+            <a th:href="@{/users/checkout}" th:if="${!(#lists.isEmpty(cartItems))}" ><button class="checkout">Proceed to Checkout</button></a>
             <button class="continue">Continue Shopping</button>
 
             <div class="features">

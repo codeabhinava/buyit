@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Top Selling Products</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            width: 90%;
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #2d5be3;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .top {
+            background: green;
+        }
+
+        .category-header {
+  position: relative;
+  background-color: #2f5fe3;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
+/* Make select cover the whole th but invisible */
+.category-header select {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;          /* hides Books text */
+  cursor: pointer;
+}
+
+/* Arrow styling */
+.category-header .arrow {
+  margin-left: 5px;
+  font-size: 12px;
+}
+
+
+    </style>
+</head>
+<body>
+
+<h2>🔥 Top Selling Products</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Product Name</th>
+            <th class="category-header">
+  Category
+  <span class="arrow">▼</span>
+
+  <select onchange="location.href = this.value" id="categorySelect">
+    <option>---Select---</option>
+    <option th:value="@{/admin/topsellers}">All</option>
+    <option th:each="cat : ${categories}"
+            
+            th:text="${cat}"
+            th:value="@{/admin/topsellers/{category}(category=${cat})}">
+    </option>
+  </select>
+</th>
+
+            <th>Price</th>
+            <th>Sold Count</th>
+        </tr>
+    </thead>
+
+    <tbody>
+<tr th:each="p, stat : ${products}">
+    <td th:text="${stat.count}"></td>
+    <td th:text="${p.product.name}"></td>
+    <td th:text="${p.product.category}"></td>
+    <td th:text="'₹ ' + ${p.product.price}"></td>
+    <td>
+        <span class="badge top" th:text="${p.quantity}"></span>
+    </td>
+</tr>
+</tbody>
+
+</table>
+
+</body>
+</html>

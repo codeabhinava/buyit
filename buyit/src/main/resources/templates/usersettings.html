@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Settings - BuyIT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background: #f6f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .settings-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            margin-top: 12px;
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #2d5be3;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e53935;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #aaa;
+            color: white;
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .toggle input {
+            width: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="settings-container">
+
+    <h2>Account Settings</h2>
+
+    <!-- USER INFO -->
+    <div class="section">
+        <h3>Profile Information</h3>
+
+        <label>Username</label>
+        <input type="text" th:value="${user.username}" readonly>
+
+        <form th:action="@{/users/update-email}" method="post">
+            <label>Email</label>
+            <input type="email" name="email" th:value="${user.email}" required>
+            <button class="btn btn-primary" type="submit">Update Email</button>
+        </form>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="section">
+        <h3>Change Password</h3>
+
+        <form th:action="@{/users/change-password}" method="post">
+            <label>Current Password</label>
+            <input type="password" name="currentPassword" required>
+
+            <label>New Password</label>
+            <input type="password" name="newPassword" required>
+
+            <label>Confirm New Password</label>
+            <input type="password" name="confirmPassword" required>
+
+            <button class="btn btn-primary" type="submit">Change Password</button>
+        </form>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="section">
+        <h3>Notifications</h3>
+
+        <div class="toggle">
+            <input type="checkbox" name="emailNotifications" checked>
+            <span>Email Notifications</span>
+        </div>
+
+        <div class="toggle">
+            <input type="checkbox" name="smsNotifications">
+            <span>SMS Notifications</span>
+        </div>
+    </div>
+
+    <!-- ACCOUNT ACTIONS -->
+    <div class="section">
+        <h3>Account Actions</h3>
+
+        <a th:href="@{/logout}">
+            <button class="btn btn-secondary">Logout</button>
+        </a>
+
+        <form th:action="@{/users/delete-account}" method="post"
+              onsubmit="return confirm('Are you sure you want to delete your account?');">
+            <button class="btn btn-danger" type="submit">Delete Account</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

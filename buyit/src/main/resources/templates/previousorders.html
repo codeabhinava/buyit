@@ -107,8 +107,10 @@
 }
 
 .logo {
-    font-size: 24px;
+     font-size: 24px;
     font-weight: bold;
+    color: black;
+    text-decoration: none;
 }
 
 /* SEARCH */
@@ -161,7 +163,93 @@
 .user-name {
     font-size: 14px;
     margin-left: 4px;
+}.category-dropdown, .profile-dropdown {
+    position: relative;
+    display: inline-block;
 }
+
+/* Button */
+.category-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px 12px;
+    font-weight: 600;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    z-index: 1000;
+}
+
+/* Each category item */
+.dropdown-menu a {
+    display: block;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: black;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f2f2f2;
+}
+
+.profile-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Show dropdown on hover */
+.category-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.add-btn {
+    width: 100%;
+    padding: 10px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 10%;
+}
+.sort-dropdown {
+    margin-left: 90%;
+    position: relative;
+    cursor: pointer;
+}
+
+.sort-dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.sort-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a, .dropdown-menu button {
+    display: block;
+    padding: 10px 14px;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+}
+
 
         @media (max-width: 768px) {
             .container {
@@ -178,25 +266,38 @@
 
 <body>
 <header class="header">
-    <div class="logo">BuyIT</div>
-
-    <div class="search-box">
-        <input type="text" placeholder="Search products...">
-    </div>
+    <div class="logo"><a th:href="@{/users/home}">BuyIT</a></div>
 
     <div class="nav-right">
-        <a href="#">Categories</a>
-        <a href="#">Deals</a>
+  <div class="category-dropdown">
+    <button class="category-btn">Categories ⬇</button>
+
+    <div class="dropdown-menu">
+        <a th:each="cat : ${categories}" th:text="${cat}" th:href="@{/users/categories/{category}(category=${cat})}"></a>
+    </div>
+</div>
+
+
+
+
+        <a th:href="@{/users/deals}">Deals</a>
 
         <div class="icon cart">
             <a th:href="@{/users/cart}">
             🛒
-            <span id="cart-count">0</span></a>
+            <span id="cart-count" th:text="${cartCount}"></span></a>
         </div>
-
+        <div><a th:href="@{/users/orders}">ORDERS</a></div>
+        <div class="profile-dropdown">
         <div class="icon">
-            👤
+            👤</div>
             <span class="user-name" th:text="${username}"></span>
+            <div class="dropdown-menu">
+                <a th:href="@{/users/profile}">Profile</a>
+                <a th:href="@{/users/settings}">Settings</a>
+                <a th:href="@{/logout}">Logout</a>
+            </div>
+        
         </div>
     </div>
 </header>
@@ -210,10 +311,10 @@
     </div>
 
     <!-- Orders list -->
-    <div class="order-card" th:each="order : ${orders}">
+    <div class="order-card" th:each="item : ${orders}">
 
         <div class="order-header">
-            <div th:each="item : ${orders}">
+            
     <p>
         Order ID:
         <span th:text="${item.order.orderId}"></span>

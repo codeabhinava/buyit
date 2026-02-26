@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.example.buyit.service.AdminService;
 import com.example.buyit.service.RegistrationService;
 
 @Configuration
@@ -18,10 +19,12 @@ public class SecurityConfig {
 
     private final RegistrationService appUserService;
     private final PasswordEncoder passwordEncoder;
+    private final AdminService adminService;
 
-    public SecurityConfig(RegistrationService appUserService, PasswordEncoder passwordEncoder) {
+    public SecurityConfig(RegistrationService appUserService, PasswordEncoder passwordEncoder, AdminService adminService) {
         this.appUserService = appUserService;
         this.passwordEncoder = passwordEncoder;
+        this.adminService = adminService;
     }
 
     @Bean

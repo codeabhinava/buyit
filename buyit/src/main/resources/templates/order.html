@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Orders - Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+        .container {
+            width: 90%;
+            margin: 30px auto;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .PAID { background-color: #28a745; color: white; }
+        .PENDING { background-color: #ffc107; color: black; }
+        .CANCELLED { background-color: #dc3545; color: white; }
+
+        .btn {
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+        }
+        .view-btn {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>All Orders</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Order Date</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="ord, stat : ${orders}">
+            <td th:text="${stat.count}"></td>
+            <td th:text="${ord.order.orderId}"></td>
+           <td th:text="${ord.appUser.id}"></td>
+             <td th:text="'₹ ' + ${ord.price}"></td>
+
+            <!-- <td>
+                <span class="status"
+                      th:text="${ord.status}"
+                      th:classappend="${ord.status}">
+                </span>
+            </td>
+
+            <td>
+                <a th:href="@{/admin/orders/{id}(id=${order.id})}"
+                   class="btn view-btn">
+                    View
+                </a>
+            </td> -->
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

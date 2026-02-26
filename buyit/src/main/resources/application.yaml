@@ -19,11 +19,19 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        
+  kafka:
+    bootstrap-servers: localhost:9092
 
-  razorpay:
-    key-id: rzp_test_S8OFzDvhEw6Gjr
-    key-secret: 4YHwUGMddtDzA5A9F7Jwx6l8
-    
+    consumer:
+      group-id: buyit-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
   mail:
     host: localhost

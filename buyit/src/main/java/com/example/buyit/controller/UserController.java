@@ -1,15 +1,14 @@
 package com.example.buyit.controller;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.buyit.model.Address;
 import com.example.buyit.model.AppReg;
@@ -31,6 +29,7 @@ import com.example.buyit.model.Cart;
 import com.example.buyit.model.OrderedItems;
 import com.example.buyit.model.Orders;
 import com.example.buyit.model.Product;
+import com.example.buyit.model.UserRole;
 import com.example.buyit.repository.AddressRepository;
 import com.example.buyit.repository.AppUserRepository;
 import com.example.buyit.repository.CartRepository;
@@ -39,9 +38,6 @@ import com.example.buyit.repository.OrderedItemsRepository;
 import com.example.buyit.repository.ProductRepository;
 import com.example.buyit.service.CartService;
 import com.example.buyit.service.RegistrationService;
-import com.razorpay.Order;
-import com.razorpay.RazorpayClient;
-import com.razorpay.RazorpayException;
 
 @CrossOrigin
 @Controller
@@ -71,6 +67,9 @@ public class UserController {
 
     @Autowired
     AddressRepository addressRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @PostMapping("/api/register")
     public String registerUser(@RequestBody AppReg appreg) {
@@ -109,15 +108,43 @@ public class UserController {
     }
 
     @GetMapping("/home")
-    public String homePage(Model model) {
+    public String home(Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "default") String sortBy) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
-        model.addAttribute("username", username);
-        List<Product> products = productRepository.findAll();
-        model.addAttribute("products", products);
+
+        AppUser user = appUserRepository.findByUsername(username).orElseThrow();
+
+        if (!user.isIsenabled()) {
+            return "redirect:/login?error";
+        }
+
+        if (user.getUserRole() == UserRole.ADMIN) {
+            return "redirect:/admin/dashboard";
+        }
+
+        Page<Product> products;
+
+        if ("price".equals(sortBy)) {
+            products = productRepository.findAllByOrderByPriceAsc(PageRequest.of(page, 40));
+        } else if ("quantity".equals(sortBy)) {
+            products = productRepository.findAllByOrderByQuantity(PageRequest.of(page, 40));
+        } else {
+            products = productRepository.findAllProducts(PageRequest.of(page, 40));
+        }
+
+        model.addAttribute("products", products.getContent());
+        model.addAttribute("totalPages", products.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("sortBy", sortBy);
+
         model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
+
         List<String> categories = productRepository.findDistinctCategories();
         model.addAttribute("categories", categories);
+
         return "homepage";
     }
 
@@ -205,7 +232,12 @@ public class UserController {
 
         model.addAttribute("items", items);
         model.addAttribute("total", total);
-
+        model.addAttribute("username", username);
+        List<Product> products = productRepository.findAll();
+        model.addAttribute("products", products);
+        model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
+        List<String> categories = productRepository.findDistinctCategories();
+        model.addAttribute("categories", categories);
         return "checkoutpage";
     }
 
@@ -228,34 +260,6 @@ public class UserController {
 
         addressRepository.save(userAddress);
         return "redirect:/users/checkout";
-    }
-
-    @GetMapping("/sort/price")
-    public String sortByPrice(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        model.addAttribute("username", username);
-        model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
-        List<String> categories = productRepository.findDistinctCategories();
-        model.addAttribute("categories", categories);
-
-        List<Product> products = productRepository.findAllByOrderByPriceAsc();
-        model.addAttribute("products", products);
-        return "homepage";
-    }
-
-    @GetMapping("/sort/quantity")
-    public String sortByQuantity(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        model.addAttribute("username", username);
-        model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
-        List<String> categories = productRepository.findDistinctCategories();
-        model.addAttribute("categories", categories);
-
-        List<Product> products = productRepository.findAllByOrderByQuantityAsc();
-        model.addAttribute("products", products);
-        return "homepage";
     }
 
     @GetMapping("/placeorder")
@@ -296,7 +300,12 @@ public class UserController {
                 .findByUsername(username)
                 .orElseThrow();
         List<OrderedItems> orders = orderedItemsRepository.findAllByAppUser(user);
-
+        model.addAttribute("username", username);
+        List<Product> products = productRepository.findAll();
+        model.addAttribute("products", products);
+        model.addAttribute("cartCount", cartRepository.getTotalCartCount(username));
+        List<String> categories = productRepository.findDistinctCategories();
+        model.addAttribute("categories", categories);
         model.addAttribute("orders", orders);
         return "previousorders";
     }
@@ -325,8 +334,12 @@ public class UserController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
+        if (cartRepository.findByProduct_ProdIdAndAppUser(prodId, appUserRepository.findByUsername(username).orElseThrow()).orElseThrow().getQuantity() > 1) {
 
-        cartRepository.decrementQuantity(prodId, username);
+            cartRepository.decrementQuantity(prodId, username);
+        } else {
+            cartRepository.deleteByProductIdAndUsername(prodId, username);
+        }
 
         return "redirect:/users/cart";
 
@@ -385,5 +398,52 @@ public class UserController {
 
         return "redirect:/users/profile";
 
+    }
+
+    @GetMapping("/settings")
+    public String settings(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        AppUser user = appUserRepository
+                .findByUsername(username)
+                .orElseThrow();
+        model.addAttribute("user", user);
+        return "usersettings";
+    }
+
+    @PostMapping("/update-email")
+    public String changeEmail(@ModelAttribute AppUser appUser) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        AppUser existingUser = appUserRepository
+                .findByUsername(username)
+                .orElseThrow();
+        existingUser.setEmail(appUser.getEmail());
+        appUserRepository.save(existingUser);
+        return "redirect:/users/settings";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@ModelAttribute AppUser appUser) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        AppUser existingUser = appUserRepository
+                .findByUsername(username)
+                .orElseThrow();
+        existingUser.setPassword(passwordEncoder.encode(appUser.getEmail()));
+        appUserRepository.save(existingUser);
+        return "redirect:/users/settings";
+    }
+
+    @PostMapping("/delete-account")
+    public String deleteAccount(@ModelAttribute AppUser appUser) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        AppUser user = appUserRepository
+                .findByUsername(username)
+                .orElseThrow();
+        appUserRepository.delete(user);
+
+        return "redirect:/login";
     }
 }

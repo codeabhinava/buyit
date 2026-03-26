@@ -2,10 +2,10 @@ package com.example.buyit.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,17 +25,13 @@ import com.example.buyit.repository.ProductRepository;
 import com.example.buyit.service.AdminService;
 import com.example.buyit.service.ProductService;
 
-import jakarta.websocket.server.PathParam;
-
 @Controller
 @CrossOrigin
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    @Autowired
     private AdminRepository adminRepo;
 
     private final AdminService adminService;
@@ -45,7 +41,9 @@ public class AdminController {
     private final AddressRepository addressRepo;
     private final ConfirmationTokenRepository confirmationTokenRepo;
 
-    public AdminController(AdminService adminService, AppUserRepository appUserRepo, ProductRepository productRepo, OrderedItemsRepository orderedItemsRepo, AddressRepository addressRepo, ConfirmationTokenRepository confirmationTokenRepo) {
+    public AdminController(ProductService productService, AdminRepository adminRepo, AdminService adminService, AppUserRepository appUserRepo, ProductRepository productRepo, OrderedItemsRepository orderedItemsRepo, AddressRepository addressRepo, ConfirmationTokenRepository confirmationTokenRepo) {
+        this.productService = productService;
+        this.adminRepo = adminRepo;
         this.adminService = adminService;
         this.appUserRepo = appUserRepo;
         this.productRepo = productRepo;
@@ -191,7 +189,7 @@ public class AdminController {
         return "order";
     }
 
-    @GetMapping("/products/delete/{id}")
+    @DeleteMapping("/products/delete/{id}")
     public String deleteProduct(@PathVariable Long id) {
         productRepo.deleteById(id);
         return "redirect:/admin/products";

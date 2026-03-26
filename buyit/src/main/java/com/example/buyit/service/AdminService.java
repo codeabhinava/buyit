@@ -33,8 +33,9 @@ public class AdminService {
     }
 
     public void add(AdminRegistration adminRegistration) {
-        Admin newadmin = new Admin(adminRegistration.getAdmin_no(), adminRegistration.getPassword(), 0, 0, UserRole.ADMIN, true);
         String encoded = passwordEncoder.bCryptPasswordEncoder().encode(adminRegistration.getPassword());
+        Admin newadmin = new Admin(adminRegistration.getAdmin_no(), encoded, 0, 0, UserRole.ADMIN, true);
+
         AppUser adminUser = new AppUser(adminRegistration.getAdmin_no(), null, null, encoded, UserRole.ADMIN, null);
         appUserRepo.save(adminUser);
         appUserRepo.enableAllAdmins();

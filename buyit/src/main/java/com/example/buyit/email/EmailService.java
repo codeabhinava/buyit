@@ -20,6 +20,7 @@ public class EmailService implements EmailSender {
     @Autowired
     private final JavaMailSender mailSender;
 
+    @SuppressWarnings("null")
     @Override
     @Async
     public void send(String to, String email) {

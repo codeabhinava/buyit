@@ -5,9 +5,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/buyitv1
-    username: postgres
-    password: possql312
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/buyitv1}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:possql312}
     driver-class-name: org.postgresql.Driver
   
   jpa:
@@ -21,23 +21,21 @@ spring:
         format_sql: true
         
   kafka:
-    bootstrap-servers: localhost:9092
-
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: buyit-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
   mail:
-    host: localhost
-    port: 1025
-    username: hello
-    password: hello
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:hello}
+    password: ${MAIL_PASSWORD:hello}
     properties:
       mail:
         smtp:
